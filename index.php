@@ -27,7 +27,16 @@ if (isset($_POST["submit"])) {
         echo "inserted";
     }
 }
+if (isset($_GET["delete"])) {
+    $id = $_GET["delete"];
+    $delquery = "DELETE FROM pinfo WHERE Id ='$id'";
+    $resultdel = mysqli_query($con, $delquery);
 
+    if ($resultdel) {
+        echo "deleted";
+      
+    }
+}
 
 else if (isset($_POST["update"])) {
     $fname = $_POST["fnameupdate"];
@@ -72,7 +81,7 @@ else if (isset($_POST["update"])) {
 
     <!-- Modal -->
     
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="background-color:grey";>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
