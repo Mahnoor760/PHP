@@ -1,17 +1,17 @@
 <?php
 
-$apikey = '$2y$10$BylaBcXs5Lw7ZOtYmQ3PXO1x15zpp26oc1FeGktdmF6YeYoRd88e';
-$response = file_get_contents("https://hadithapi.com/api/books?apiKey=$apikey");
 
-$response = json_decode($response, true);
+if (isset($_POST["booksSlug"])) {
+    $bookslug = $_POST["booksSlug"];
+    $apikey = '$2y$10$BylaBcXs5Lw7ZOtYmQ3PXO1x15zpp26oc1FeGktdmF6YeYoRd88e';
+    $response = file_get_contents("https://hadithapi.com/api/$bookslug/chapters?apiKey=$apikey");
 
-// print_r($response["books"]);
+    $response = json_decode($response, true);
 
-$hadithbooks = $response["books"];
+    // print_r($response["books"]);
 
-
-?>
-
+    $hadithchapters = $response["chapters"];
+} ?>
 
 
 <!doctype html>
@@ -22,7 +22,6 @@ $hadithbooks = $response["books"];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa&display=swap" rel="stylesheet">
@@ -30,27 +29,38 @@ $hadithbooks = $response["books"];
 
 
     <style>
-        body {
+       body {
     font-family: "jameel";
     background-color: #FFF3C2;
     color: #54530a; 
 }
 
-@font-face {
-    font-family: "jameel";
-    src: url(fonts/jameel.ttf);
-}
+     
+        @font-face {
+            font-family: "jameel";
+            src: url(fonts/jameel.ttf);
+        }
 
-.card-img-top {
-    width: 280px; 
-    height: 360px;
-}
+        .arabic {
+            font-family: 'Amiri Quran', serif;
+            font-size: 26px; 
+        }
+
+        .urdu {
+            font-family: "jameel";
+            color:#034A01;
+
+        }
+       
+        .card-img-top{
+            width: 280px; 
+            height: 360px;
+        }
+        
 
 .btn {
     background-color: #54530a; 
     border-color: #d4af37; 
-    
-    
 }
 
 .btn:hover {
@@ -62,15 +72,14 @@ $hadithbooks = $response["books"];
 .card {
     background-color: #FFF3C2;
     border-color: #d4af37;
+    font-size: 26px; 
     border-width: 8px;
-    width: 200px;
-    height: 270px;
     color: #54530a; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
-    padding: 15px;
+    padding: 10px;
     box-sizing: border-box;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -80,75 +89,42 @@ $hadithbooks = $response["books"];
     border-color: #034A01; 
 }
 .card-text {
-    font-size: 16px;
+  
     line-height: 1.5;
     margin-bottom: 10px;
 }
 
-h1 {
-    color: #034A01;
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    font-family: 'Amiri Quran', serif;
-}
-
-.card-title {
-    color: #034A01;
-    font-family: 'Aref Ruqaa', serif;
-    font-weight: 600;
-}
-
-.container {
-    padding-top: 20px;
-}
-
-.row {
-    justify-content: center;
-}
-
-.navbar {
-    background-color: #034A01;
-}
-
-.navbar-brand, .nav-link {
-    color: #FFF3C2 !important;
-}
-
-
 
     </style>
+
 
 </head>
 
 <body>
-<?php include 'navbar.php'?>
-<h1><center>The Hadith of the Prophet Muhammad (صلى الله عليه و سلم)</center></h1>
+    <?php include "navbar.php"; ?>
     <div class="container">
         <div class="row">
-        
             <?php
-             
-
-            foreach ($hadithbooks as  $value) {
+            foreach ($hadithchapters as  $value) {
 
 
 
                 echo '
-                  <div class="col-md-4 col-sm-6 mb-4">
+                  <div class="col-md-6 col-sm-12 mb-4">
 
-                <div class="card" style="width: 18rem;">
-                            
+                <div class="card" ">
+                
                     <div class="card-body">
-                        <h3 class="card-title">' . $value["bookName"] . '</h3>
-                        <p class="card-text">  ' . $value["writerName"] . '</p>
-                        <p class="card-text"> Hadith Chapters' . $value["chapters_count"] . ' | Total Hadith ' . $value["hadiths_count"] . '</p>
-                           <form action="chapters.php" method="post">
+                        <h5 class="card-title arabic" >' . $value["chapterArabic"] . '</h5>
+                        <p class="card-text urdu">  ' . $value["chapterUrdu"] . ' </p>
+                        <p class="card-text urdu">  ' . $value["chapterEnglish"] . ' </p>
+                           <form action="hadith.php" method="post">
 
 
                 <input type="hidden"  name="booksSlug" value="' . $value['bookSlug'] . '">
+                <input type="hidden"  name="chapnum" value="' . $value['chapterNumber'] . '">
 
-                <input type="submit" class="btn btn-dark" value="Read Chapters">
+                <input type="submit" class="btn btn-dark" value="Read Hadiths">
 
 
 
@@ -162,12 +138,6 @@ h1 {
             }
 
             ?>
-
-
-
-
-
-
 
 
         </div>
